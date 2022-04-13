@@ -1,5 +1,6 @@
 from tkinter import*
 from tkinter import ttk,messagebox
+import pymysql
 
 class customer:
     def __init__(self,root):
@@ -9,64 +10,81 @@ class customer:
         title= Label(self.root,text="Loan Management System",font=('times new rommon',40,'bold'),bg='yellow',fg='red',bd=10,relief=GROOVE)
         title.pack(side=TOP,fill=X)
 
-        Detail_F=Frame(self.root,bd=4,relief=RIDGE,bg='powderblue)
+        # Variables
+
+        self.loanId=StringVar()
+        self.name=StringVar()
+        self.mob=StringVar()
+        self.aadhar=StringVar()
+        self.add=StringVar()
+        self.pin=StringVar()
+        self.mpay=StringVar()
+        self.tpay=StringVar()
+        self.rate=StringVar()
+        self.years=StringVar()
+        self.amount=StringVar()
+        self.time=StringVar()
+
+        # Details Frame
+
+        Detail_F=Frame(self.root,bd=4,relief=RIDGE,bg='powderblue')
         Detail_F.place(x=10,y=90,width=520,height=620)
 
         lbl_id=Label(Detail_F,text='Loan Id',font=('times new rommon',15,'bold'))
         lbl_id.grid(row=0,column=0,padx=20,pady=10,sticky='w')
-        txt_id=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_id=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.loanId)
         txt_id.grid(row=0,column=1)
 
         lbl_name=Label(Detail_F,text='Full Name',font=('times new rommon',15,'bold'))
         lbl_name.grid(row=1,column=0,padx=20,pady=10,sticky='w')
-        txt_name=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_name=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.name)
         txt_name.grid(row=1,column=1)
 
         lbl_mob=Label(Detail_F,text='Mobile No.',font=('times new rommon',15,'bold'))
         lbl_mob.grid(row=2,column=0,padx=20,pady=10,sticky='w')
-        txt_mob=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_mob=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.mob)
         txt_mob.grid(row=2,column=1)
 
         lbl_aa=Label(Detail_F,text='Aadhar No.',font=('times new rommon',15,'bold'))
         lbl_aa.grid(row=3,column=0,padx=20,pady=10,sticky='w')
-        txt_aa=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_aa=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.aadhar)
         txt_aa.grid(row=3,column=1)
 
         lbl_add=Label(Detail_F,text='Address',font=('times new rommon',15,'bold'))
         lbl_add.grid(row=4,column=0,padx=20,pady=10,sticky='w')
-        txt_add=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_add=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.add)
         txt_add.grid(row=4,column=1)
 
         lbl_pin=Label(Detail_F,text='PinCode',font=('times new rommon',15,'bold'))
         lbl_pin.grid(row=5,column=0,padx=20,pady=10,sticky='w')
-        txt_pin=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_pin=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.pin)
         txt_pin.grid(row=5,column=1)
 
         lbl_amount=Label(Detail_F,text='Amount Of Loan',font=('times new rommon',15,'bold'))
         lbl_amount.grid(row=6,column=0,padx=20,pady=10,sticky='w')
-        txt_amount=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_amount=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.amount)
         txt_amount.grid(row=6,column=1)
 
         lbl_time=Label(Detail_F,text='Number Of Years',font=('times new rommon',15,'bold'))
         lbl_time.grid(row=7,column=0,padx=20,pady=10,sticky='w')
-        txt_time=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_time=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.time)
         txt_time.grid(row=7,column=1)
 
         lbl_rate=Label(Detail_F,text='Interest Rate',font=('times new rommon',15,'bold'))
         lbl_rate.grid(row=8,column=0,padx=20,pady=10,sticky='w')
-        txt_rate=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_rate=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.rate)
         txt_rate.grid(row=8,column=1,pady=10,sticky='w')
 
         lbl_Mp=Label(Detail_F,text='Monthly Payment',font=('times new rommon',15,'bold'))
         lbl_Mp.grid(row=9,column=0,padx=20,pady=10,sticky='w')
-        txt_Mp=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_Mp=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.mpay)
         txt_Mp.grid(row=9,column=1)
 
         lbl_tp=Label(Detail_F,text='Total Payment',font=('times new rommon',15,'bold'))
         lbl_tp.grid(row=10,column=0,padx=20,pady=10,sticky='w')
-        txt_tp=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
+        txt_tp=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE,textvariable=self.tpay)
         txt_tp.grid(row=10,column=1)
-        
+
         RFrame=Frame(self.root,bd=4,relief=RIDGE)
         RFrame.place(x=535,y=90,width=800,height=520)
 
@@ -98,7 +116,7 @@ class customer:
         btn_Frame=Frame(self.root,bd=4,relief=RIDGE)
         btn_Frame.place(x=535,y=610,width=810,height=100)
 
-        btn1=Button(btn_Frame,text='Add record',font='arial 15 bold',width=9,bg='lime',fg='blue')
+        btn1=Button(btn_Frame,text='Add record',font='arial 15 bold',width=9,bg='lime',fg='blue',command=self.addrecord)
         btn1.grid(row=0,column=0,padx=10,pady=10)
 
         btn2=Button(btn_Frame,text='Update',font='arial 15 bold',bg='lime',fg='blue',width=9)
@@ -112,6 +130,32 @@ class customer:
 
         btn5=Button(btn_Frame,text='Exit',font='arial 15 bold',bg='lime',fg='blue',width=9)
         btn5.grid(row=0,column=4,padx=10,pady=10)
+
+# Functions
+
+    def addrecord(self):
+       if self.loanId.get()=='':
+           messagebox.showerror('Error','Customer details are must')
+       else:
+            con=pymysql.connect(host='localhost',user='root',password='',database='emp')
+            cur=con.cursor()
+            cur.execute("Insert into customer values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(self.loanId.get(),
+                                                                               self.name.get(),
+                                                                               self.years.get(),
+                                                                               self.rate.get(),
+                                                                               self.mpay.get(),
+                                                                               self.tpay.get(),
+                                                                               self.mob.get(),
+                                                                               self.aadhar.get(),
+                                                                               self.add.get(),
+                                                                               self.pin.get(),
+                                                                               self.amount.get()
+                                                                                ))
+
+            con.commit()
+            con.close()
+
+        
 
 root=Tk()
 obj=customer(root)
