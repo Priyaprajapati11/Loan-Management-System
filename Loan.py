@@ -1,5 +1,5 @@
-from cgitb import text
 from tkinter import*
+from tkinter import ttk,messagebox
 
 class customer:
     def __init__(self,root):
@@ -9,7 +9,7 @@ class customer:
         title= Label(self.root,text="Loan Management System",font=('times new rommon',40,'bold'),bg='yellow',fg='red',bd=10,relief=GROOVE)
         title.pack(side=TOP,fill=X)
 
-        Detail_F=Frame(self.root,bd=4,relief=RIDGE)
+        Detail_F=Frame(self.root,bd=4,relief=RIDGE,bg='powderblue)
         Detail_F.place(x=10,y=90,width=520,height=620)
 
         lbl_id=Label(Detail_F,text='Loan Id',font=('times new rommon',15,'bold'))
@@ -66,6 +66,52 @@ class customer:
         lbl_tp.grid(row=10,column=0,padx=20,pady=10,sticky='w')
         txt_tp=Entry(Detail_F,font=('times new rommon',18,'bold'),bd=3,relief=GROOVE)
         txt_tp.grid(row=10,column=1)
+        
+        RFrame=Frame(self.root,bd=4,relief=RIDGE)
+        RFrame.place(x=535,y=90,width=800,height=520)
+
+        yscroll=Scrollbar(RFrame,orient=VERTICAL)
+        self.employee_table=ttk.Treeview(RFrame,columns=('empid','name','years','rate','Mpayment','Tpayment','mobile'),yscrollcommand=yscroll)
+        yscroll.pack(side=RIGHT,fill=Y)
+        yscroll.config(command=self.employee_table.yview)
+        self.employee_table.heading('empid',text='Employee Id')
+        self.employee_table.heading('name',text='Name')
+        self.employee_table.heading('years',text='Number Of Years')
+        self.employee_table.heading('rate',text='Interest Rate')
+        self.employee_table.heading('Mpayment',text='Monthly Payment')
+        self.employee_table.heading('Tpayment',text='Total Payment')
+        self.employee_table.heading('mobile',text='Mobile No.')
+        self.employee_table['show']='headings'
+
+        self.employee_table.column('empid',width=100)
+        self.employee_table.column('name',width=100)
+        self.employee_table.column('years',width=100)
+        self.employee_table.column('rate',width=100)
+        self.employee_table.column('Mpayment',width=100)
+        self.employee_table.column('Tpayment',width=100)
+        self.employee_table.column('mobile',width=100)
+        
+        self.employee_table.pack(fill=BOTH,expand=1)
+
+        #Button
+
+        btn_Frame=Frame(self.root,bd=4,relief=RIDGE)
+        btn_Frame.place(x=535,y=610,width=810,height=100)
+
+        btn1=Button(btn_Frame,text='Add record',font='arial 15 bold',width=9,bg='lime',fg='blue')
+        btn1.grid(row=0,column=0,padx=10,pady=10)
+
+        btn2=Button(btn_Frame,text='Update',font='arial 15 bold',bg='lime',fg='blue',width=9)
+        btn2.grid(row=0,column=1,padx=10,pady=10)
+
+        btn3=Button(btn_Frame,text='Delete',font='arial 15 bold',bg='lime',fg='blue',width=9)
+        btn3.grid(row=0,column=2,padx=10,pady=10)
+
+        btn4=Button(btn_Frame,text='Reset',font='arial 15 bold',bg='lime',fg='blue',width=9)
+        btn4.grid(row=0,column=3,padx=10,pady=10)
+
+        btn5=Button(btn_Frame,text='Exit',font='arial 15 bold',bg='lime',fg='blue',width=9)
+        btn5.grid(row=0,column=4,padx=10,pady=10)
 
 root=Tk()
 obj=customer(root)
