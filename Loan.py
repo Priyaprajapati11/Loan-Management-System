@@ -92,7 +92,7 @@ class customer:
         self.employee_table=ttk.Treeview(RFrame,columns=('empid','name','years','rate','Mpayment','Tpayment','mobile'),yscrollcommand=yscroll)
         yscroll.pack(side=RIGHT,fill=Y)
         yscroll.config(command=self.employee_table.yview)
-        self.employee_table.heading('empid',text='Employee Id')
+        self.employee_table.heading('empid',text='Loan Id')
         self.employee_table.heading('name',text='Name')
         self.employee_table.heading('years',text='Number Of Years')
         self.employee_table.heading('rate',text='Interest Rate')
@@ -111,6 +111,9 @@ class customer:
         
         self.employee_table.pack(fill=BOTH,expand=1)
 
+        self.fetch()
+        self.employee_table.bind("<ButtonRelease-1>",self.get_cursor)
+
         #Button
 
         btn_Frame=Frame(self.root,bd=4,relief=RIDGE)
@@ -119,19 +122,29 @@ class customer:
         btn1=Button(btn_Frame,text='Add record',font='arial 15 bold',width=9,bg='lime',fg='blue',command=self.addrecord)
         btn1.grid(row=0,column=0,padx=10,pady=10)
 
-        btn2=Button(btn_Frame,text='Update',font='arial 15 bold',bg='lime',fg='blue',width=9)
+        btn2=Button(btn_Frame,text='Update',font='arial 15 bold',bg='lime',fg='blue',width=9,command=self.update)
         btn2.grid(row=0,column=1,padx=10,pady=10)
 
-        btn3=Button(btn_Frame,text='Delete',font='arial 15 bold',bg='lime',fg='blue',width=9)
+        btn3=Button(btn_Frame,text='Delete',font='arial 15 bold',bg='lime',fg='blue',width=9,command=self.delete)
         btn3.grid(row=0,column=2,padx=10,pady=10)
 
-        btn4=Button(btn_Frame,text='Reset',font='arial 15 bold',bg='lime',fg='blue',width=9)
+        btn4=Button(btn_Frame,text='Reset',font='arial 15 bold',bg='lime',fg='blue',width=9,command=self.reset)
         btn4.grid(row=0,column=3,padx=10,pady=10)
 
-        btn5=Button(btn_Frame,text='Exit',font='arial 15 bold',bg='lime',fg='blue',width=9)
+        btn5=Button(btn_Frame,text='Exit',font='arial 15 bold',bg='lime',fg='blue',width=9,command=self.exit)
         btn5.grid(row=0,column=4,padx=10,pady=10)
 
 # Functions
+
+    def total(self):
+        p=int(self.amount.get())
+        r=int(self.rate.get())
+        y=int(self.years.get())
+
+        t=(p*r*y*12)/100
+        m=(p+t)/(y*12)
+        self.mpay.set(str(round(m,2)))
+        self.tpay.set(str(p+t))
 
     def addrecord(self):
        if self.loanId.get()=='':
@@ -139,6 +152,13 @@ class customer:
        else:
             con=pymysql.connect(host='localhost',user='root',password='',database='emp')
             cur=con.cursor()
+            cur.execute("Select * from customer")
+            rows=cur.fetchall()
+            for row in rows:
+                if row[0]==self.loanId.get():
+                    messagebox.showerror('Error','Duplicate entry not allowed')
+                    return
+                
             cur.execute("Insert into customer values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",(self.loanId.get(),
                                                                                self.name.get(),
                                                                                self.years.get(),
@@ -153,9 +173,95 @@ class customer:
                                                                                 ))
 
             con.commit()
+            self.fetch()
             con.close()
 
+    def fetch(self):
+         con=pymysql.connect(host='localhost',user='root',password='',database='emp')
+         cur=con.cursor()
+         cur.execute("Select * from customer")
+         rows=cur.fetchall()
+         if len(rows)!=0:
+             self.employee_table.delete(*self.employee_table.get_children())
+             for row in rows:
+                self.employee_table.insert('',END,Values=row)
+         con.commit()
+         con.close()
+
+    def get_cursor(self,ev):
+        cur_row=self.employee_table.focus()
+        content=self.employee_table.item(cur_row)
+        row=content['values']
+        self.loanId.set(row[0])
+        self.name.set(row[1])
+        self.years.set(row[2])
+        self.rate.set(row[3])
+        self.mpay.set(row[4])
+        self.tpay.set(row[5])
+        self.mob.set(row[6])
+        self.aadhar.set(row[7])
+        self.add.set(row[8])
+        self.pin.set(row[9])
+        self.amount.set(row[10])
+
+    def update(self):
+        if self.loanId.get()=='':
+            messagebox.showerror('Error','Input information for update')
+        else:
+            con=pymysql.connect(host='localhost',user='root',password='',database='emp')
+            cur=con.cursor()
+            cur.execute("Update customer set Name=%s,Year=%s,Rate=%s,Monthly_Payment=%s,Total_Payment=%s,MobileNumber=%s,AadharNumber=%s,Pincode=%s,Amount=%s where Loan_Id=%s",(self.name.get(),
+                        self.years.get(),
+                        self.rate.get(),
+                        self.mpay.get(),
+                        self.tpay.get(),
+                        self.mpb.get(),
+                        self.aadhar.get(),
+                        self.add.get(),
+                        self.pin.get(),
+                        self.amount.get(),
+                        self.loanId.get()
+                         ))
+
+
+
+            messagebox.showinfo('info',f'Recor{self.loanId.get()} Updated Successfully')
+            con.commit()
+            con.close()
+            self.fetch()
+            self.reset()
+
+    def delete(self):
+        if self.loanId.get()=='':
+            messagebox.showerror('Error','Input Loan Id To Delete The Record')
+        else:
+             con=pymysql.connect(host='localhost',user='root',password='',database='emp')
+             cur=con.cursor()
+             cur.execute("Delete form customer where Loan_Id=%s",self.loanId.get())
+             con.commit()
+             con.close()
+             self.fetch()
+             self.reset()
+
+
+    def reset(self):
+        self.loanId.set('')
+        self.name.set('')
+        self.mob.set('')
+        self.aadhar.set('')
+        self.add.set('')
+        self.pin.set('')
+        self.amount.set('')
+        self.years.set('')
+        self.rate.set('')
+        self.mpay.set('')
+        self.tpay.set('')
         
+    def exit(self):
+        if messagebox.askyesno('Exit','Do you reallu want to exit'):
+            root.destroy()
+
+            
 
 root=Tk()
 obj=customer(root)
